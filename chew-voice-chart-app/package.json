@@ -1,0 +1,21 @@
+{
+  "name": "PWA",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline speech-to-text patient documentation PWA for Community Health Extension Workers",
+  "keywords": [
+    "CHEW"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "archangel@github.com"
+  },
+  "license": "UNLICENSED",
+  "author": "DAVID BASSEY",
+  "type": "PWA",
+  "main": "y",
+  "scripts": {
+    "start": "npx --yes serve -l 5173 .",
+    "dev": "npx --yes serve -l 5173 ."
+  }
+}
