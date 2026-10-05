@@ -1,1182 +1,1159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0F6B5C">
-<title>CHEW Voice Chart</title>
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./icons/favicon-32.png" sizes="32x32">
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="VoiceChart">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#F4F6F5; --bg-alt:#EAF0ED; --ink:#12241F; --muted:#5B6B67;
-    --primary:#0F6B5C; --primary-dark:#0B4F44; --primary-light:#E1F0EA;
-    --accent:#E0632B; --accent-dark:#B94E20; --danger:#C43D2E;
-    --card:#FFFFFF; --border:#DCE3E0; --shadow:rgba(15,50,42,0.10);
-    --font-ui: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
-    box-sizing:border-box;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#0E1613; --bg-alt:#132019; --ink:#EAF3EF; --muted:#9BB0AA;
-      --primary:#3FBFA1; --primary-dark:#2E9C82; --primary-light:#173029;
-      --accent:#F0824B; --accent-dark:#D96A34; --danger:#E2635A;
-      --card:#152420; --border:#26392F; --shadow:rgba(0,0,0,0.45);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0F6B5C" />
+  <title>CHEW Voice Chart</title>
+  <style>
+    :root {
+      --bg: #f4f6f5;
+      --bg-alt: #eaf0ed;
+      --ink: #12241f;
+      --muted: #5b6b67;
+      --primary: #0f6b5c;
+      --primary-dark: #0b4f44;
+      --primary-light: #e1f0ea;
+      --accent: #e0632b;
+      --danger: #c43d2e;
+      --card: #ffffff;
+      --border: #dce3e0;
+      --shadow: rgba(15, 50, 42, 0.12);
     }
-  }
-  :root[data-theme="dark"]{
-    --bg:#0E1613; --bg-alt:#132019; --ink:#EAF3EF; --muted:#9BB0AA;
-    --primary:#3FBFA1; --primary-dark:#2E9C82; --primary-light:#173029;
-    --accent:#F0824B; --accent-dark:#D96A34; --danger:#E2635A;
-    --card:#152420; --border:#26392F; --shadow:rgba(0,0,0,0.45);
-  }
-  html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-ui);
-    -webkit-font-smoothing:antialiased;
-  }
-  #root{min-height:100%; display:flex; flex-direction:column;}
-  button{font-family:inherit;}
-  input, select, textarea{font-family:inherit; font-size:1rem;}
-  .mono{font-family:var(--font-mono);}
-  .app-shell{max-width:520px; width:100%; margin:0 auto; flex:1; display:flex; flex-direction:column; padding:0 16px 32px;}
-
-  /* ---------- Auth ---------- */
-  .auth-wrap{flex:1; display:flex; flex-direction:column; justify-content:center; padding:24px 6px;}
-  .auth-brand{display:flex; align-items:center; gap:12px; margin-bottom:28px;}
-  .auth-brand .mark{
-    width:52px; height:52px; border-radius:14px; background:var(--primary);
-    display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    box-shadow:0 6px 16px var(--shadow);
-  }
-  .auth-brand .mark svg{width:28px; height:28px;}
-  .auth-brand h1{font-size:1.05rem; margin:0; letter-spacing:0.01em;}
-  .auth-brand p{margin:2px 0 0; font-size:0.8rem; color:var(--muted);}
-  .card{
-    background:var(--card); border:1px solid var(--border); border-radius:18px;
-    padding:22px 20px; box-shadow:0 10px 30px var(--shadow);
-  }
-  .field{margin-bottom:14px;}
-  .field label{display:block; font-size:0.78rem; font-weight:700; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;}
-  .field input, .field select, .field textarea{
-    width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid var(--border);
-    background:var(--bg-alt); color:var(--ink); outline:none; transition:border-color .15s;
-  }
-  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--primary);}
-  .field-row{display:flex; gap:10px;}
-  .field-row > .field{flex:1;}
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    border:none; border-radius:12px; padding:13px 18px; font-weight:700; font-size:0.95rem;
-    cursor:pointer; transition:transform .1s ease, opacity .15s; width:100%;
-  }
-  .btn:active{transform:scale(0.98);}
-  .btn-primary{background:var(--primary); color:#fff;}
-  .btn-primary:disabled{opacity:0.55; cursor:not-allowed;}
-  .btn-ghost{background:transparent; color:var(--primary); border:1.5px solid var(--primary);}
-  .btn-accent{background:var(--accent); color:#fff;}
-  .btn-danger{background:transparent; color:var(--danger); border:1.5px solid var(--danger);}
-  .btn-sm{padding:9px 14px; font-size:0.85rem; width:auto;}
-  .link-row{text-align:center; margin-top:14px; font-size:0.85rem; color:var(--muted);}
-  .link-row button{background:none; border:none; color:var(--primary); font-weight:700; cursor:pointer; padding:0;}
-  .error-box{background:color-mix(in srgb, var(--danger) 12%, transparent); color:var(--danger); border-radius:10px; padding:10px 12px; font-size:0.85rem; margin-bottom:14px; font-weight:600;}
-
-  /* ---------- Header / Nav ---------- */
-  .topbar{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 0 10px; position:sticky; top:0; background:var(--bg); z-index:20;
-    padding-top: calc(14px + env(safe-area-inset-top, 0px));
-  }
-  .who{display:flex; align-items:center; gap:10px;}
-  .who .avatar{
-    width:38px; height:38px; border-radius:10px; background:var(--primary-light); color:var(--primary-dark);
-    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.95rem;
-  }
-  .who .meta{line-height:1.2;}
-  .who .meta strong{font-size:0.9rem; display:block;}
-  .who .meta span{font-size:0.72rem; color:var(--muted);}
-  .status-pill{
-    display:inline-flex; align-items:center; gap:5px; font-size:0.68rem; font-weight:700;
-    padding:4px 9px; border-radius:20px; background:var(--bg-alt); color:var(--muted);
-  }
-  .status-pill.online{color:var(--primary-dark); background:var(--primary-light);}
-  .status-pill .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
-  .icon-btn{
-    width:38px; height:38px; border-radius:10px; border:1px solid var(--border); background:var(--card);
-    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);
-  }
-  .tabbar{
-    display:flex; gap:6px; background:var(--bg-alt); border-radius:14px; padding:5px; margin-bottom:18px;
-  }
-  .tabbar button{
-    flex:1; border:none; background:transparent; padding:9px 4px; border-radius:10px; font-weight:700;
-    font-size:0.78rem; color:var(--muted); cursor:pointer;
-  }
-  .tabbar button.active{background:var(--card); color:var(--primary-dark); box-shadow:0 3px 10px var(--shadow);}
-
-  /* ---------- Home / Recorder ---------- */
-  .home-hero{text-align:center; padding:6px 0 8px;}
-  .home-hero h2{font-size:1.15rem; margin:0 0 4px;}
-  .home-hero p{color:var(--muted); font-size:0.85rem; margin:0;}
-  .rec-stage{display:flex; flex-direction:column; align-items:center; padding:26px 0 10px;}
-  .rec-btn-wrap{position:relative; width:230px; height:230px; display:flex; align-items:center; justify-content:center;}
-  .ring{
-    position:absolute; border-radius:50%; border:2px solid var(--accent); opacity:0;
-  }
-  .rec-btn-wrap.recording .ring{ animation: pulse-ring 1.8s ease-out infinite; }
-  .ring.r2{animation-delay:0.5s !important;}
-  .ring.r3{animation-delay:1s !important;}
-  @keyframes pulse-ring{
-    0%{ width:150px; height:150px; opacity:0.55; }
-    100%{ width:270px; height:270px; opacity:0; }
-  }
-  .rec-btn{
-    position:relative; z-index:2; width:190px; height:190px; border-radius:50%;
-    background:var(--accent); border:none; cursor:pointer; color:#fff;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
-    box-shadow:0 14px 34px rgba(224,99,43,0.35); transition:transform .15s ease, background .2s;
-  }
-  .rec-btn:active{transform:scale(0.96);}
-  .rec-btn.active{background:var(--danger); box-shadow:0 14px 34px rgba(196,61,46,0.4);}
-  .rec-btn svg{width:56px; height:56px;}
-  .rec-btn .lbl{font-weight:800; font-size:0.95rem; letter-spacing:0.02em;}
-  .rec-hint{color:var(--muted); font-size:0.8rem; margin-top:18px; max-width:280px; text-align:center; line-height:1.5;}
-  .rec-timer{font-family:var(--font-mono); font-size:1.3rem; font-weight:600; margin-top:14px; color:var(--accent);}
-  .quick-tiles{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px;}
-  .tile{
-    background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px;
-    text-align:left; cursor:pointer;
-  }
-  .tile .n{font-family:var(--font-mono); font-size:1.35rem; font-weight:600; color:var(--primary-dark);}
-  .tile .l{font-size:0.75rem; color:var(--muted); margin-top:2px;}
-
-  /* ---------- Transcript / Live form ---------- */
-  .transcript-box{
-    background:var(--bg-alt); border:1px dashed var(--border); border-radius:14px; padding:14px;
-    font-size:0.9rem; color:var(--ink); min-height:64px; margin:16px 0; line-height:1.55;
-  }
-  .transcript-box .interim{color:var(--muted); font-style:italic;}
-  .transcript-box .placeholder{color:var(--muted);}
-  .cue-hint{
-    background:var(--primary-light); color:var(--primary-dark); border-radius:12px; padding:11px 13px;
-    font-size:0.78rem; line-height:1.5; margin-bottom:14px;
-  }
-  .cue-hint strong{display:block; margin-bottom:3px; font-size:0.8rem;}
-  .form-section{margin-bottom:18px;}
-  .form-section > .sec-title{
-    font-size:0.72rem; font-weight:800; letter-spacing:0.06em; color:var(--primary-dark);
-    text-transform:uppercase; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid var(--border);
-    display:flex; align-items:center; gap:6px;
-  }
-  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-  .filled-tag{
-    display:inline-block; font-size:0.62rem; font-weight:700; color:var(--primary-dark); background:var(--primary-light);
-    border-radius:6px; padding:1px 6px; margin-left:6px; vertical-align:middle;
-  }
-  .action-row{display:flex; gap:10px; margin-top:20px;}
-  .action-row .btn{flex:1;}
-  .banner{
-    border-radius:12px; padding:10px 13px; font-size:0.8rem; margin-bottom:14px; font-weight:600;
-  }
-  .banner.warn{background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--accent-dark);}
-  .banner.info{background:var(--primary-light); color:var(--primary-dark);}
-
-  /* ---------- History ---------- */
-  .rec-card{
-    background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px;
-    cursor:pointer;
-  }
-  .rec-card .top-row{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
-  .rec-card .name{font-weight:700; font-size:0.95rem;}
-  .rec-card .date{font-size:0.72rem; color:var(--muted); font-family:var(--font-mono); margin-top:2px;}
-  .rec-card .diag{font-size:0.82rem; color:var(--muted); margin-top:6px;}
-  .sync-tag{font-size:0.62rem; font-weight:800; padding:3px 8px; border-radius:20px; text-transform:uppercase;}
-  .sync-tag.pending{background:var(--bg-alt); color:var(--muted);}
-  .sync-tag.synced{background:var(--primary-light); color:var(--primary-dark);}
-  .empty-state{text-align:center; padding:50px 20px; color:var(--muted);}
-  .empty-state svg{width:46px; height:46px; margin-bottom:10px; opacity:0.5;}
-
-  /* ---------- Export ---------- */
-  .export-opt{
-    display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--border);
-    border-radius:14px; padding:14px; margin-bottom:10px; cursor:pointer;
-  }
-  .export-opt .ic{width:38px; height:38px; border-radius:10px; background:var(--primary-light); color:var(--primary-dark); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
-  .export-opt .tt{font-weight:700; font-size:0.9rem;}
-  .export-opt .dd{font-size:0.76rem; color:var(--muted); margin-top:1px;}
-
-  /* ---------- Settings ---------- */
-  .settings-row{
-    display:flex; align-items:center; justify-content:space-between; padding:14px 2px;
-    border-bottom:1px solid var(--border);
-  }
-  .settings-row:last-child{border-bottom:none;}
-  .settings-row .tt{font-weight:700; font-size:0.88rem;}
-  .settings-row .dd{font-size:0.76rem; color:var(--muted); margin-top:2px;}
-  .switch{position:relative; width:46px; height:26px; flex-shrink:0;}
-  .switch input{opacity:0; width:0; height:0;}
-  .switch .track{position:absolute; inset:0; background:var(--border); border-radius:20px; cursor:pointer; transition:background .2s;}
-  .switch .track:before{content:""; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .2s;}
-  .switch input:checked + .track{background:var(--primary);}
-  .switch input:checked + .track:before{transform:translateX(20px);}
-
-  /* ---------- Toast ---------- */
-  .toast-wrap{position:fixed; bottom:calc(20px + env(safe-area-inset-bottom,0px)); left:0; right:0; display:flex; justify-content:center; z-index:100; pointer-events:none;}
-  .toast{
-    background:var(--ink); color:var(--bg); padding:11px 18px; border-radius:30px; font-size:0.85rem;
-    font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,0.25); max-width:90%; text-align:center;
-  }
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(10,20,17,0.55); display:flex; align-items:flex-end;
-    justify-content:center; z-index:90; padding:0;
-  }
-  .modal-sheet{
-    background:var(--card); width:100%; max-width:520px; border-radius:20px 20px 0 0; padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));
-    max-height:82vh; overflow-y:auto;
-  }
-  .modal-sheet h3{margin:0 0 14px;}
-  .modal-close{float:right; background:none; border:none; font-size:1.3rem; color:var(--muted); cursor:pointer;}
-
-  ::-webkit-scrollbar{width:0; height:0;}
-  a{color:var(--primary-dark);}
-</style>
+    * { box-sizing: border-box; }
+    html, body, #root { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, sans-serif;
+    }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    .app-shell {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    .auth-wrap {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--primary);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 22px;
+    }
+    .brand h1 {
+      margin: 0 0 2px;
+      font-size: 1.1rem;
+    }
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 30px var(--shadow);
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg-alt);
+      color: var(--ink);
+      outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--primary);
+    }
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+    }
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1.5px solid var(--danger);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .link-row {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .link-row button {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+    }
+    .error-box {
+      background: rgba(196, 61, 46, 0.1);
+      color: var(--danger);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .user-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+    .meta strong {
+      display: block;
+      font-size: 0.9rem;
+    }
+    .meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+    .status {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--bg-alt);
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+    .status.online {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+    .nav {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-alt);
+      padding: 5px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+    .nav button {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 6px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .nav .active {
+      background: var(--card);
+      color: var(--primary-dark);
+      box-shadow: 0 3px 10px var(--shadow);
+    }
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .hero {
+      text-align: center;
+      margin: 16px 0;
+    }
+    .hero h2 {
+      margin: 0 0 6px;
+      font-size: 1.15rem;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .record-btn-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 18px 0;
+    }
+    .record-btn {
+      width: 180px;
+      height: 180px;
+      border: none;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 14px 34px rgba(224,99,43,0.35);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+    .record-btn.active {
+      background: var(--danger);
+    }
+    .rec-hint {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .action-row .btn {
+      flex: 1;
+      width: auto;
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+    .settings-row .tt {
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+    .settings-row .dd {
+      margin-top: 2px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .split-muted {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .switch {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .switch .track {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: var(--border);
+    }
+    .switch .track::before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+    }
+    .switch input:checked + .track {
+      background: var(--primary);
+    }
+    .switch input:checked + .track::before {
+      transform: translateX(20px);
+    }
+    .cloud-config {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+    .consult-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+    }
+    .consult-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .consult-name {
+      font-weight: 700;
+    }
+    .consult-date {
+      margin-top: 4px;
+      font-size: 0.74rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+    .sync-pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: var(--bg-alt);
+      color: var(--muted);
+    }
+    .sync-pill.synced {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 28px 12px;
+      font-size: 0.9rem;
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 20, 17, 0.5);
+      display: grid;
+      place-items: end center;
+      z-index: 20;
+    }
+    .modal-sheet {
+      width: min(560px, 100%);
+      background: var(--card);
+      border-radius: 18px 18px 0 0;
+      padding: 20px 16px 24px;
+      max-height: 85vh;
+      overflow: auto;
+    }
+    .modal-close {
+      float: right;
+      font-size: 1.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 12px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .transcript-box {
+      background: var(--bg-alt);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      line-height: 1.5;
+      color: var(--ink);
+      min-height: 80px;
+    }
+  </style>
 </head>
 <body>
-<div id="root"></div>
+  <div id="root"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var h = React.createElement;
+      var useState = React.useState;
+      var useEffect = React.useEffect;
 
-<script>
-(function(){
-"use strict";
-var h = React.createElement;
-var useState = React.useState, useEffect = React.useEffect, useRef = React.useRef, useCallback = React.useCallback, useMemo = React.useMemo;
+      function uid() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      }
+      function nowIso() { return new Date().toISOString(); }
+      function fmtDate(iso) {
+        try {
+          var d = new Date(iso);
+          return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) + " · " + d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+        } catch (e) { return iso || ""; }
+      }
+      function sha256Hex(str) {
+        return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)).then(function (buf) {
+          return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+        });
+      }
+      function genSalt() {
+        var bytes = crypto.getRandomValues(new Uint8Array(12));
+        return Array.from(bytes).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+      }
 
-/* ============================================================
-   ICONS (tiny inline SVGs, currentColor)
-============================================================ */
-function Icon(name, extraProps){
-  var common = Object.assign({viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:"2", strokeLinecap:"round", strokeLinejoin:"round"}, extraProps||{});
-  var paths = {
-    mic: [h("path",{key:1,d:"M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"}), h("path",{key:2,d:"M19 11a7 7 0 0 1-14 0"}), h("line",{key:3,x1:"12",y1:"18",x2:"12",y2:"22"})],
-    stop: [h("rect",{key:1,x:"7",y:"7",width:"10",height:"10",rx:"1.5"})],
-    history: [h("path",{key:1,d:"M3 12a9 9 0 1 0 3-6.7"}), h("path",{key:2,d:"M3 4v5h5"}), h("path",{key:3,d:"M12 8v4l3 2"})],
-    export: [h("path",{key:1,d:"M12 3v12"}), h("path",{key:2,d:"M7 10l5 5 5-5"}), h("path",{key:3,d:"M5 20h14"})],
-    settings: [h("circle",{key:1,cx:"12",cy:"12",r:"3"}), h("path",{key:2,d:"M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.4 1z"})],
-    logout: [h("path",{key:1,d:"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"}), h("path",{key:2,d:"M16 17l5-5-5-5"}), h("path",{key:3,d:"M21 12H9"})],
-    check: [h("polyline",{key:1,points:"20 6 9 17 4 12"})],
-    edit: [h("path",{key:1,d:"M12 20h9"}), h("path",{key:2,d:"M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"})],
-    trash: [h("polyline",{key:1,points:"3 6 5 6 21 6"}), h("path",{key:2,d:"M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"}), h("path",{key:3,d:"M10 11v6"}), h("path",{key:4,d:"M14 11v6"}), h("path",{key:5,d:"M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"})],
-    cloud: [h("path",{key:1,d:"M17.5 19H9a5 5 0 1 1 1-9.9A6 6 0 0 1 22 12a4.5 4.5 0 0 1-4.5 7z"})],
-    file: [h("path",{key:1,d:"M14 3v4a1 1 0 0 0 1 1h4"}), h("path",{key:2,d:"M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"})],
-    empty: [h("path",{key:1,d:"M9 12h6"}), h("path",{key:2,d:"M9 16h6"}), h("path",{key:3,d:"M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"})],
-    pulse: [h("path",{key:1,d:"M3 12h4l2 8 4-16 2 8h6"})]
-  };
-  return h("svg", common, paths[name] || []);
-}
+      var LS_USERS = "chewvoice_users";
+      var LS_SESSION = "chewvoice_session";
+      var LS_CONSULTS = "chewvoice_consultations";
+      var LS_SETTINGS = "chewvoice_settings";
 
-/* ============================================================
-   UTILITIES
-============================================================ */
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
-function nowIso(){ return new Date().toISOString(); }
-function fmtDate(iso){
-  try{
-    var d = new Date(iso);
-    return d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}) + " · " + d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
-  }catch(e){ return iso; }
-}
-function csvEscape(v){
-  if(v===undefined || v===null) v="";
-  v = String(v);
-  if(/[",\n]/.test(v)) return '"' + v.replace(/"/g,'""') + '"';
-  return v;
-}
-function toCsv(rows, columns){
-  var lines = [columns.map(function(c){return csvEscape(c.label);}).join(",")];
-  rows.forEach(function(r){
-    lines.push(columns.map(function(c){return csvEscape(c.get(r));}).join(","));
-  });
-  return lines.join("\r\n");
-}
-async function sha256Hex(str){
-  var enc = new TextEncoder().encode(str);
-  var buf = await crypto.subtle.digest("SHA-256", enc);
-  return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
-}
-function genSalt(){
-  var bytes = crypto.getRandomValues(new Uint8Array(12));
-  return Array.from(bytes).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
-}
+      function lsGet(key, fallback) {
+        try {
+          var raw = localStorage.getItem(key);
+          if (raw == null) return fallback;
+          return JSON.parse(raw);
+        } catch (e) {
+          return fallback;
+        }
+      }
+      function lsSet(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
 
-/* ============================================================
-   LOCAL STORAGE (offline-first persistence, per-browser/device)
-============================================================ */
-var LS_USERS = "chewvoice_users";
-var LS_SESSION = "chewvoice_session";
-var LS_CONSULTS = "chewvoice_consultations";
-var LS_SETTINGS = "chewvoice_settings";
-
-function lsGet(key, fallback){
-  try{
-    var raw = localStorage.getItem(key);
-    if(raw===null) return fallback;
-    return JSON.parse(raw);
-  }catch(e){ return fallback; }
-}
-function lsSet(key, value){
-  try{ localStorage.setItem(key, JSON.stringify(value)); return true; }
-  catch(e){ console.error("Storage write failed", e); return false; }
-}
-
-var Store = {
-  getUsers: function(){ return lsGet(LS_USERS, []); },
-  saveUsers: function(list){ return lsSet(LS_USERS, list); },
-  getSession: function(){ return lsGet(LS_SESSION, null); },
-  saveSession: function(s){ return lsSet(LS_SESSION, s); },
-  clearSession: function(){ try{ localStorage.removeItem(LS_SESSION); }catch(e){} },
-  getConsults: function(){ return lsGet(LS_CONSULTS, []); },
-  saveConsults: function(list){ return lsSet(LS_CONSULTS, list); },
-  getSettings: function(){ return lsGet(LS_SETTINGS, {language:"en-US", cloudSync:false, theme:"auto"}); },
-  saveSettings: function(s){ return lsSet(LS_SETTINGS, s); }
-};
-
-/* ============================================================
-   AUTH SERVICE (client-side demo auth: SHA-256 + per-user salt)
-============================================================ */
-var Auth = {
-  register: async function({fullName, username, password, role, facilityCode}){
-    var users = Store.getUsers();
-    var exists = users.some(function(u){ return u.username.toLowerCase() === username.toLowerCase(); });
-    if(exists) throw new Error("That username is already taken.");
-    var salt = genSalt();
-    var passwordHash = await sha256Hex(salt + password);
-    var user = {
-      id: uid(), fullName: fullName, username: username, passwordHash: passwordHash, salt: salt,
-      role: role || "CHEW", facilityCode: facilityCode || "UNSET", createdAt: nowIso()
-    };
-    users.push(user);
-    Store.saveUsers(users);
-    return user;
-  },
-  login: async function(username, password){
-    var users = Store.getUsers();
-    var user = users.find(function(u){ return u.username.toLowerCase() === username.toLowerCase(); });
-    if(!user) throw new Error("No account with that username.");
-    var candidate = await sha256Hex(user.salt + password);
-    if(candidate !== user.passwordHash) throw new Error("Incorrect password.");
-    var session = { userId: user.id, fullName: user.fullName, username: user.username, role: user.role, facilityCode: user.facilityCode, loginAt: nowIso() };
-    Store.saveSession(session);
-    return session;
-  },
-  logout: function(){ Store.clearSession(); }
-};
-
-/* ============================================================
-   MEDICAL TEMPLATE + FIELD EXTRACTION
-============================================================ */
-var FIELD_GROUPS = [
-  { key:"patient", title:"Patient Info", fields:[
-    {key:"fullName", label:"Full name", type:"text"},
-    {key:"age", label:"Age", type:"text", unit:"yrs"},
-    {key:"gender", label:"Gender", type:"select", options:["","Male","Female"]},
-    {key:"cardNumber", label:"Card number", type:"text"},
-    {key:"village", label:"Village / address", type:"text"},
-    {key:"phone", label:"Phone", type:"text"}
-  ]},
-  { key:"vitals", title:"Vitals", fields:[
-    {key:"temperature", label:"Temperature", type:"text", unit:"°C"},
-    {key:"bloodPressure", label:"Blood pressure", type:"text", unit:"mmHg"},
-    {key:"pulseRate", label:"Pulse rate", type:"text", unit:"bpm"},
-    {key:"respiratoryRate", label:"Respiratory rate", type:"text", unit:"/min"},
-    {key:"weight", label:"Weight", type:"text", unit:"kg"}
-  ]},
-  { key:"clinical", title:"Clinical", fields:[
-    {key:"chiefComplaint", label:"Chief complaint / symptoms", type:"textarea"},
-    {key:"diagnosis", label:"Diagnosis", type:"textarea"},
-    {key:"treatment", label:"Treatment / prescription", type:"textarea"}
-  ]},
-  { key:"followUp", title:"Referral & Follow-up", fields:[
-    {key:"referral", label:"Referral", type:"text"},
-    {key:"followUpDate", label:"Follow-up date", type:"text"},
-    {key:"notes", label:"Additional notes", type:"textarea"}
-  ]}
-];
-
-function emptyFieldState(){
-  var out = {};
-  FIELD_GROUPS.forEach(function(g){ g.fields.forEach(function(f){ out[f.key] = ""; }); });
-  return out;
-}
-
-var EXTRACTION_RULES = [
-  { key:"fullName", re:/(?:patient(?:'s)? name is|patient name|name is)\s+([a-z][a-z .'-]{1,40}?)(?=,| age| aged| gender| is a| is male| is female|\.|$)/i },
-  { key:"age", re:/\bage(?: is| of)?\s*[:]?\s*(\d{1,3})\b/i },
-  { key:"gender", re:/\b(female|male)\b/i, transform:function(v){ return v.charAt(0).toUpperCase()+v.slice(1).toLowerCase(); } },
-  { key:"cardNumber", re:/card number(?: is)?\s*[:]?\s*([a-z0-9\-\/]{3,20})/i },
-  { key:"village", re:/village(?: is)?\s+([a-z .'-]{2,40}?)(?=,|\.| phone|$)/i },
-  { key:"phone", re:/phone(?: number)?(?: is)?\s*[:]?\s*([0-9+\-\s]{7,15})/i },
-  { key:"temperature", re:/temperature(?: is| of)?\s*[:]?\s*(\d{2}(?:\.\d)?)/i },
-  { key:"bloodPressure", re:/blood pressure(?: is| of)?\s*[:]?\s*(\d{2,3}\s*(?:over|\/)\s*\d{2,3})/i, transform:function(v){ return v.replace(/\s*over\s*/i,"/").replace(/\s+/g,""); } },
-  { key:"pulseRate", re:/pulse(?: rate)?(?: is| of)?\s*[:]?\s*(\d{2,3})/i },
-  { key:"respiratoryRate", re:/respiratory rate(?: is| of)?\s*[:]?\s*(\d{1,3})/i },
-  { key:"weight", re:/weight(?: is| of)?\s*[:]?\s*(\d{1,3}(?:\.\d)?)/i },
-  { key:"chiefComplaint", re:/complain(?:s|t)?(?: of)?\s+([a-z0-9 ,'-]{2,90}?)(?=\.|temperature|blood pressure|pulse|diagnos|treatment|$)/i },
-  { key:"diagnosis", re:/diagnos(?:is|ed with|ed as)(?: is)?\s*[:]?\s*([a-z0-9 ,'-]{2,70}?)(?=\.|treatment|refer|follow|$)/i },
-  { key:"treatment", re:/treatment(?: is| given(?: is)?| prescribed(?: is)?)?\s*[:]?\s*([a-z0-9 ,.'-]{2,90}?)(?=\.|refer|follow|$)/i },
-  { key:"referral", re:/refer(?:ral|red)?(?: to)?\s*[:]?\s*([a-z0-9 .'-]{2,60}?)(?=\.|follow|$)/i },
-  { key:"followUpDate", re:/follow[- ]?up(?: date is| on| in)?\s*[:]?\s*([a-z0-9 ,'-]{2,30}?)(?=\.|$)/i }
-];
-
-function extractFields(text){
-  var found = {};
-  if(!text) return found;
-  EXTRACTION_RULES.forEach(function(rule){
-    var m = text.match(rule.re);
-    if(m && m[1]){
-      var val = m[1].trim().replace(/[,.\s]+$/,"");
-      if(rule.transform) val = rule.transform(val);
-      if(val) found[rule.key] = val;
-    }
-  });
-  return found;
-}
-
-/* ============================================================
-   VOICE ENGINE (Web Speech API wrapper)
-============================================================ */
-function getRecognitionCtor(){
-  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
-}
-function createRecognizer(lang, handlers){
-  var Ctor = getRecognitionCtor();
-  if(!Ctor) return null;
-  var rec = new Ctor();
-  rec.continuous = true;
-  rec.interimResults = true;
-  rec.lang = lang || "en-US";
-  rec.onresult = function(evt){
-    var finalChunk = "", interim = "";
-    for(var i = evt.resultIndex; i < evt.results.length; i++){
-      var res = evt.results[i];
-      if(res.isFinal) finalChunk += res[0].transcript;
-      else interim += res[0].transcript;
-    }
-    handlers.onResult(finalChunk, interim);
-  };
-  rec.onerror = function(evt){ handlers.onError && handlers.onError(evt.error); };
-  rec.onend = function(){ handlers.onEnd && handlers.onEnd(); };
-  return rec;
-}
-
-/* ============================================================
-   EXPORT GENERATORS
-============================================================ */
-var NHMIS_COLUMNS = [
-  { label:"facility_code", get:function(r){ return r.facilityCode; } },
-  { label:"chew_username", get:function(r){ return r.chewUsername; } },
-  { label:"card_number", get:function(r){ return r.fields.cardNumber; } },
-  { label:"patient_name", get:function(r){ return r.fields.fullName; } },
-  { label:"age", get:function(r){ return r.fields.age; } },
-  { label:"gender", get:function(r){ return r.fields.gender; } },
-  { label:"village", get:function(r){ return r.fields.village; } },
-  { label:"consult_date", get:function(r){ return r.consultDate; } },
-  { label:"chief_complaint", get:function(r){ return r.fields.chiefComplaint; } },
-  { label:"diagnosis", get:function(r){ return r.fields.diagnosis; } },
-  { label:"treatment", get:function(r){ return r.fields.treatment; } },
-  { label:"temperature_c", get:function(r){ return r.fields.temperature; } },
-  { label:"blood_pressure", get:function(r){ return r.fields.bloodPressure; } },
-  { label:"pulse_rate", get:function(r){ return r.fields.pulseRate; } },
-  { label:"respiratory_rate", get:function(r){ return r.fields.respiratoryRate; } },
-  { label:"weight_kg", get:function(r){ return r.fields.weight; } },
-  { label:"referral", get:function(r){ return r.fields.referral; } },
-  { label:"follow_up_date", get:function(r){ return r.fields.followUpDate; } }
-];
-var CSV_COLUMNS = NHMIS_COLUMNS.concat([
-  { label:"notes", get:function(r){ return r.fields.notes; } },
-  { label:"sync_status", get:function(r){ return r.syncStatus; } },
-  { label:"created_at", get:function(r){ return r.createdAt; } }
-]);
-
-function buildCsv(records){ return toCsv(records, CSV_COLUMNS); }
-function buildNhmisCsv(records){ return toCsv(records, NHMIS_COLUMNS); }
-
-function buildDhis2Json(records, facilityOrgUnit){
-  var payload = {
-    events: records.map(function(r){
-      return {
-        program: "CHEW_VOICE_CONSULT",
-        orgUnit: facilityOrgUnit || r.facilityCode,
-        eventDate: (r.consultDate || r.createdAt || "").slice(0,10),
-        status: "COMPLETED",
-        storedBy: r.chewUsername,
-        dataValues: [
-          { dataElement: "DE_PATIENT_CARD", value: r.fields.cardNumber || "" },
-          { dataElement: "DE_PATIENT_NAME", value: r.fields.fullName || "" },
-          { dataElement: "DE_PATIENT_AGE", value: r.fields.age || "" },
-          { dataElement: "DE_PATIENT_GENDER", value: r.fields.gender || "" },
-          { dataElement: "DE_CHIEF_COMPLAINT", value: r.fields.chiefComplaint || "" },
-          { dataElement: "DE_DIAGNOSIS", value: r.fields.diagnosis || "" },
-          { dataElement: "DE_TREATMENT", value: r.fields.treatment || "" },
-          { dataElement: "DE_TEMPERATURE", value: r.fields.temperature || "" },
-          { dataElement: "DE_BLOOD_PRESSURE", value: r.fields.bloodPressure || "" },
-          { dataElement: "DE_PULSE_RATE", value: r.fields.pulseRate || "" },
-          { dataElement: "DE_RESPIRATORY_RATE", value: r.fields.respiratoryRate || "" },
-          { dataElement: "DE_WEIGHT", value: r.fields.weight || "" },
-          { dataElement: "DE_REFERRAL", value: r.fields.referral || "" }
-        ]
+      var Store = {
+        getUsers: function () { return lsGet(LS_USERS, []); },
+        saveUsers: function (list) { return lsSet(LS_USERS, list); },
+        getSession: function () { return lsGet(LS_SESSION, null); },
+        saveSession: function (s) { return lsSet(LS_SESSION, s); },
+        clearSession: function () { try { localStorage.removeItem(LS_SESSION); } catch (e) {} },
+        getConsults: function () { return lsGet(LS_CONSULTS, []); },
+        saveConsults: function (list) { return lsSet(LS_CONSULTS, list); },
+        getSettings: function () {
+          return Object.assign({
+            language: "en-US",
+            cloudSync: false,
+            theme: "auto",
+            cloudUrl: "",
+            cloudKey: ""
+          }, lsGet(LS_SETTINGS, {}));
+        },
+        saveSettings: function (s) { return lsSet(LS_SETTINGS, s); }
       };
-    })
-  };
-  return JSON.stringify(payload, null, 2);
-}
 
-/* ============================================================
-   SMALL UI PRIMITIVES
-============================================================ */
-function Field(props){
-  var def = props.def, value = props.value, onChange = props.onChange, filled = props.filled;
-  var labelNode = h("label", null, def.label + (def.unit ? " (" + def.unit + ")" : ""), filled ? h("span",{className:"filled-tag"},"auto") : null);
-  var control;
-  if(def.type === "textarea"){
-    control = h("textarea", {rows:2, value:value, onChange:function(e){ onChange(def.key, e.target.value); }, placeholder:"—"});
-  } else if(def.type === "select"){
-    control = h("select", {value:value, onChange:function(e){ onChange(def.key, e.target.value); }},
-      def.options.map(function(o){ return h("option",{key:o||"blank", value:o}, o || "Select…"); })
-    );
-  } else {
-    control = h("input", {type:"text", value:value, onChange:function(e){ onChange(def.key, e.target.value); }, placeholder:"—"});
-  }
-  return h("div",{className:"field"}, labelNode, control);
-}
+      var Auth = {
+        register: async function (payload) {
+          var users = Store.getUsers();
+          var exists = users.some(function (u) { return (u.username || "").toLowerCase() === (payload.username || "").toLowerCase(); });
+          if (exists) throw new Error("That username is already taken.");
+          var salt = genSalt();
+          var passwordHash = await sha256Hex(salt + payload.password);
+          var user = {
+            id: uid(),
+            fullName: payload.fullName,
+            username: payload.username,
+            passwordHash: passwordHash,
+            salt: salt,
+            role: payload.role || "CHEW",
+            facilityCode: payload.facilityCode || "UNSET",
+            createdAt: nowIso()
+          };
+          users.push(user);
+          Store.saveUsers(users);
+          return user;
+        },
+        login: async function (username, password) {
+          var users = Store.getUsers();
+          var user = users.find(function (u) { return (u.username || "").toLowerCase() === (username || "").toLowerCase(); });
+          if (!user) throw new Error("No account with that username.");
+          var candidate = await sha256Hex(user.salt + password);
+          if (candidate !== user.passwordHash) throw new Error("Incorrect password.");
+          var session = {
+            userId: user.id,
+            fullName: user.fullName,
+            username: user.username,
+            role: user.role,
+            facilityCode: user.facilityCode,
+            loginAt: nowIso()
+          };
+          Store.saveSession(session);
+          return session;
+        },
+        logout: function () {
+          Store.clearSession();
+        }
+      };
 
-function Toast(props){
-  if(!props.message) return null;
-  return h("div",{className:"toast-wrap"}, h("div",{className:"toast"}, props.message));
-}
+      var Cloud = {
+        isConfigured: function (settings) {
+          settings = settings || Store.getSettings();
+          return !!settings.cloudSync && !!settings.cloudUrl && !!settings.cloudKey;
+        },
+        mockUpload: function (record) {
+          return new Promise(function (resolve) {
+            setTimeout(function () {
+              resolve({ ok: true, id: record.id, uploadedAt: nowIso() });
+            }, 700);
+          });
+        },
+        uploadOne: async function (record, settings) {
+          settings = settings || Store.getSettings();
+          if (!Cloud.isConfigured(settings)) return false;
+          var result = await Cloud.mockUpload(record, settings);
+          return !!result.ok;
+        },
+        syncPending: async function () {
+          var settings = Store.getSettings();
+          if (!Cloud.isConfigured(settings)) return false;
+          var consults = Store.getConsults();
+          var pending = consults.filter(function (r) { return r.syncStatus === "Pending"; });
+          var changed = false;
+          for (var i = 0; i < pending.length; i++) {
+            try {
+              await Cloud.uploadOne(pending[i], settings);
+              pending[i].syncStatus = "Synced";
+              changed = true;
+            } catch (e) {
+              console.warn("Upload failed", e);
+            }
+          }
+          if (changed) {
+            Store.saveConsults(consults);
+          }
+          return true;
+        }
+      };
 
-/* ============================================================
-   AUTH SCREENS
-============================================================ */
-function LoginScreen(props){
-  var _u = useState(""), username = _u[0], setUsername = _u[1];
-  var _p = useState(""), password = _p[0], setPassword = _p[1];
-  var _e = useState(""), error = _e[0], setError = _e[1];
-  var _b = useState(false), busy = _b[0], setBusy = _b[1];
-
-  function submit(ev){
-    ev.preventDefault();
-    setError(""); setBusy(true);
-    Auth.login(username.trim(), password).then(function(session){
-      setBusy(false);
-      props.onAuthed(session);
-    }).catch(function(err){
-      setBusy(false);
-      setError(err.message || "Could not sign in.");
-    });
-  }
-
-  return h("div",{className:"app-shell auth-wrap"},
-    h("div",{className:"auth-brand"},
-      h("div",{className:"mark"}, Icon("mic",{stroke:"#fff"})),
-      h("div", null, h("h1",null,"CHEW Voice Chart"), h("p",null,"Offline speech-to-text patient documentation"))
-    ),
-    h("div",{className:"card"},
-      error ? h("div",{className:"error-box"}, error) : null,
-      h("form",{onSubmit:submit},
-        h("div",{className:"field"}, h("label",null,"Username"), h("input",{type:"text", autoCapitalize:"none", value:username, onChange:function(e){setUsername(e.target.value);}, required:true})),
-        h("div",{className:"field"}, h("label",null,"Password"), h("input",{type:"password", value:password, onChange:function(e){setPassword(e.target.value);}, required:true})),
-        h("button",{className:"btn btn-primary", type:"submit", disabled:busy}, busy ? "Signing in…" : "Sign in")
-      )
-    ),
-    h("div",{className:"link-row"}, "New CHEW on this device? ", h("button",{onClick:props.onGoRegister}, "Create an account"))
-  );
-}
-
-function RegisterScreen(props){
-  var _f = useState(""), fullName = _f[0], setFullName = _f[1];
-  var _u = useState(""), username = _u[0], setUsername = _u[1];
-  var _p = useState(""), password = _p[0], setPassword = _p[1];
-  var _fc = useState(""), facilityCode = _fc[0], setFacilityCode = _fc[1];
-  var _r = useState("CHEW"), role = _r[0], setRole = _r[1];
-  var _e = useState(""), error = _e[0], setError = _e[1];
-  var _b = useState(false), busy = _b[0], setBusy = _b[1];
-
-  function submit(ev){
-    ev.preventDefault();
-    setError(""); setBusy(true);
-    Auth.register({fullName:fullName.trim(), username:username.trim(), password:password, role:role, facilityCode:facilityCode.trim() || "UNSET"})
-      .then(function(user){
-        return Auth.login(username.trim(), password);
-      }).then(function(session){
-        setBusy(false);
-        props.onAuthed(session);
-      }).catch(function(err){
-        setBusy(false);
-        setError(err.message || "Could not create account.");
+      window.addEventListener("online", function () {
+        if (Cloud.isConfigured(Store.getSettings())) {
+          Cloud.syncPending().catch(function () {});
+        }
       });
-  }
 
-  return h("div",{className:"app-shell auth-wrap"},
-    h("div",{className:"auth-brand"},
-      h("div",{className:"mark"}, Icon("mic",{stroke:"#fff"})),
-      h("div", null, h("h1",null,"Create your account"), h("p",null,"Local to this device — no data leaves it unless you enable cloud backup"))
-    ),
-    h("div",{className:"card"},
-      error ? h("div",{className:"error-box"}, error) : null,
-      h("form",{onSubmit:submit},
-        h("div",{className:"field"}, h("label",null,"Full name"), h("input",{type:"text", value:fullName, onChange:function(e){setFullName(e.target.value);}, required:true})),
-        h("div",{className:"field"}, h("label",null,"Username"), h("input",{type:"text", autoCapitalize:"none", value:username, onChange:function(e){setUsername(e.target.value);}, required:true})),
-        h("div",{className:"field"}, h("label",null,"Password"), h("input",{type:"password", value:password, onChange:function(e){setPassword(e.target.value);}, required:true, minLength:4})),
-        h("div",{className:"field-row"},
-          h("div",{className:"field"}, h("label",null,"Facility code"), h("input",{type:"text", value:facilityCode, onChange:function(e){setFacilityCode(e.target.value);}, placeholder:"e.g. CRS-042"})),
-          h("div",{className:"field"}, h("label",null,"Role"),
-            h("select",{value:role, onChange:function(e){setRole(e.target.value);}},
-              h("option",{value:"CHEW"},"CHEW"), h("option",{value:"ADMIN"},"Admin")
+      var FIELD_GROUPS = [
+        {
+          key: "patient",
+          title: "Patient Info",
+          fields: [
+            { key: "fullName", label: "Full name", type: "text" },
+            { key: "age", label: "Age", type: "text" },
+            { key: "gender", label: "Gender", type: "select", options: ["", "Male", "Female"] },
+            { key: "cardNumber", label: "Card number", type: "text" },
+            { key: "village", label: "Village / address", type: "text" },
+            { key: "phone", label: "Phone", type: "text" }
+          ]
+        },
+        {
+          key: "vitals",
+          title: "Vitals",
+          fields: [
+            { key: "temperature", label: "Temperature", type: "text" },
+            { key: "bloodPressure", label: "Blood pressure", type: "text" },
+            { key: "pulseRate", label: "Pulse rate", type: "text" },
+            { key: "respiratoryRate", label: "Respiratory rate", type: "text" },
+            { key: "weight", label: "Weight", type: "text" }
+          ]
+        },
+        {
+          key: "clinical",
+          title: "Clinical",
+          fields: [
+            { key: "chiefComplaint", label: "Chief complaint", type: "textarea" },
+            { key: "diagnosis", label: "Diagnosis", type: "textarea" },
+            { key: "treatment", label: "Treatment", type: "textarea" }
+          ]
+        },
+        {
+          key: "followUp",
+          title: "Follow-up",
+          fields: [
+            { key: "referral", label: "Referral", type: "text" },
+            { key: "followUpDate", label: "Follow-up date", type: "text" },
+            { key: "notes", label: "Notes", type: "textarea" }
+          ]
+        }
+      ];
+
+      function emptyFields() {
+        var out = {};
+        FIELD_GROUPS.forEach(function (group) {
+          group.fields.forEach(function (field) {
+            out[field.key] = "";
+          });
+        });
+        return out;
+      }
+
+      function LoginScreen(props) {
+        var [username, setUsername] = useState("");
+        var [password, setPassword] = useState("");
+        var [error, setError] = useState("");
+        var [busy, setBusy] = useState(false);
+
+        function submit(e) {
+          e.preventDefault();
+          setError("");
+          setBusy(true);
+          Auth.login(username.trim(), password).then(function (session) {
+            setBusy(false);
+            props.onAuthed(session);
+          }).catch(function (err) {
+            setBusy(false);
+            setError(err.message || "Could not sign in.");
+          });
+        }
+
+        return h("div", { className: "app-shell auth-wrap" },
+          h("div", null,
+            h("div", { className: "brand" },
+              h("div", { className: "brand-mark" }, "🎙"),
+              h("div", null,
+                h("h1", null, "CHEW Voice Chart"),
+                h("p", null, "Offline speech-to-text patient documentation")
+              )
+            ),
+            h("div", { className: "card" },
+              error ? h("div", { className: "error-box" }, error) : null,
+              h("form", { onSubmit: submit },
+                h("div", { className: "field" },
+                  h("label", null, "Username"),
+                  h("input", { value: username, onChange: function (e) { setUsername(e.target.value); }, required: true })
+                ),
+                h("div", { className: "field" },
+                  h("label", null, "Password"),
+                  h("input", { type: "password", value: password, onChange: function (e) { setPassword(e.target.value); }, required: true })
+                ),
+                h("button", { type: "submit", className: "btn btn-primary", disabled: busy }, busy ? "Signing in…" : "Sign in")
+              )
+            ),
+            h("div", { className: "link-row" }, "New CHEW on this device? ", h("button", { type: "button", onClick: props.onGoRegister }, "Create an account"))
+          )
+        );
+      }
+
+      function RegisterScreen(props) {
+        var [fullName, setFullName] = useState("");
+        var [username, setUsername] = useState("");
+        var [password, setPassword] = useState("");
+        var [facilityCode, setFacilityCode] = useState("");
+        var [role, setRole] = useState("CHEW");
+        var [error, setError] = useState("");
+        var [busy, setBusy] = useState(false);
+
+        function submit(e) {
+          e.preventDefault();
+          setError("");
+          setBusy(true);
+          Auth.register({ fullName: fullName.trim(), username: username.trim(), password: password, role: role, facilityCode: facilityCode.trim() || "UNSET" })
+            .then(function () { return Auth.login(username.trim(), password); })
+            .then(function (session) {
+              setBusy(false);
+              props.onAuthed(session);
+            }).catch(function (err) {
+              setBusy(false);
+              setError(err.message || "Could not create account.");
+            });
+        }
+
+        return h("div", { className: "app-shell auth-wrap" },
+          h("div", null,
+            h("div", { className: "brand" },
+              h("div", { className: "brand-mark" }, "🎙"),
+              h("div", null,
+                h("h1", null, "Create your account"),
+                h("p", null, "Local to this device — cloud sync is optional")
+              )
+            ),
+            h("div", { className: "card" },
+              error ? h("div", { className: "error-box" }, error) : null,
+              h("form", { onSubmit: submit },
+                h("div", { className: "field" },
+                  h("label", null, "Full name"),
+                  h("input", { value: fullName, onChange: function (e) { setFullName(e.target.value); }, required: true })
+                ),
+                h("div", { className: "field" },
+                  h("label", null, "Username"),
+                  h("input", { value: username, onChange: function (e) { setUsername(e.target.value); }, required: true })
+                ),
+                h("div", { className: "field" },
+                  h("label", null, "Password"),
+                  h("input", { type: "password", value: password, onChange: function (e) { setPassword(e.target.value); }, required: true, minLength: 4 })
+                ),
+                h("div", { className: "field-row" },
+                  h("div", { className: "field" },
+                    h("label", null, "Facility code"),
+                    h("input", { value: facilityCode, onChange: function (e) { setFacilityCode(e.target.value); }, placeholder: "e.g. CRS-01" })
+                  ),
+                  h("div", { className: "field" },
+                    h("label", null, "Role"),
+                    h("select", { value: role, onChange: function (e) { setRole(e.target.value); } },
+                      h("option", { value: "CHEW" }, "CHEW"),
+                      h("option", { value: "ADMIN" }, "Admin")
+                    )
+                  )
+                ),
+                h("button", { type: "submit", className: "btn btn-primary", disabled: busy }, busy ? "Creating…" : "Create account & sign in")
+              )
+            ),
+            h("div", { className: "link-row" }, "Already have an account? ", h("button", { type: "button", onClick: props.onGoLogin }, "Sign in"))
+          )
+        );
+      }
+
+      function Field(props) {
+        var def = props.def;
+        var value = props.value || "";
+        var onChange = props.onChange;
+        if (def.type === "select") {
+          return h("div", { className: "field" },
+            h("label", null, def.label),
+            h("select", { value: value, onChange: function (e) { onChange(def.key, e.target.value); } },
+              def.options.map(function (option) {
+                return h("option", { value: option, key: option || "blank" }, option || "Select…");
+              })
+            )
+          );
+        }
+        if (def.type === "textarea") {
+          return h("div", { className: "field" },
+            h("label", null, def.label),
+            h("textarea", { rows: 2, value: value, onChange: function (e) { onChange(def.key, e.target.value); }, placeholder: "—" })
+          );
+        }
+        return h("div", { className: "field" },
+          h("label", null, def.label),
+          h("input", { value: value, onChange: function (e) { onChange(def.key, e.target.value); }, placeholder: "—" })
+        );
+      }
+
+      function Header(props) {
+        var initials = (props.session.fullName || "?").split(/\s+/).map(function (s) { return s[0]; }).slice(0, 2).join("").toUpperCase();
+        return h("div", { className: "topbar" },
+          h("div", { className: "user-box" },
+            h("div", { className: "avatar" }, initials),
+            h("div", { className: "meta" },
+              h("strong", null, props.session.fullName),
+              h("span", null, props.session.facilityCode + " · " + props.session.role)
+            )
+          ),
+          h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+            h("span", { className: "status" + (props.online ? " online" : "") }, props.online ? "Online" : "Offline"),
+            h("button", { className: "btn btn-ghost", type: "button", onClick: props.onLogout, style: { width: "auto", padding: "9px 12px" } }, "Log out")
+          )
+        );
+      }
+
+      function HomeScreen(props) {
+        var session = props.session;
+        var settings = props.settings;
+        var consultations = props.consultations;
+        var [view, setView] = useState("idle");
+        var [transcript, setTranscript] = useState("");
+        var [fields, setFields] = useState(emptyFields());
+        var [active, setActive] = useState(false);
+        var [seconds, setSeconds] = useState(0);
+
+        useEffect(function () {
+          if (!active) return;
+          var timer = setInterval(function () { setSeconds(function (s) { return s + 1; }); }, 1000);
+          return function () { clearInterval(timer); };
+        }, [active]);
+
+        function updateField(key, value) {
+          setFields(function (prev) {
+            var next = Object.assign({}, prev);
+            next[key] = value;
+            return next;
+          });
+        }
+
+        function startRecording() {
+          setActive(true);
+          setFields(emptyFields());
+          setTranscript("");
+          setSeconds(0);
+          setView("recording");
+        }
+
+        function stopRecording() {
+          setActive(false);
+          setView("review");
+        }
+
+        function save() {
+          var record = {
+            id: uid(),
+            userId: session.userId,
+            chewUsername: session.username,
+            facilityCode: session.facilityCode,
+            consultDate: nowIso(),
+            transcript: transcript,
+            fields: fields,
+            syncStatus: "Pending",
+            createdAt: nowIso()
+          };
+          props.onSaveConsultation(record);
+          if (navigator.onLine && settings.cloudSync && settings.cloudUrl && settings.cloudKey) {
+            Cloud.syncPending().catch(function () {});
+          }
+          setView("idle");
+          setTranscript("");
+          setFields(emptyFields());
+          setSeconds(0);
+        }
+
+        function mmss(s) {
+          var m = Math.floor(s / 60);
+          var ss = s % 60;
+          return (m < 10 ? "0" : "") + m + ":" + (ss < 10 ? "0" : "") + ss;
+        }
+
+        if (view === "idle") {
+          return h("div", null,
+            h("div", { className: "hero" },
+              h("h2", null, "Start a consultation"),
+              h("p", null, "Tap and dictate — the chart fills itself as you talk")
+            ),
+            h("div", { className: "record-btn-wrap" },
+              h("button", { type: "button", className: "record-btn" + (active ? " active" : ""), onClick: active ? stopRecording : startRecording }, active ? "Stop" : "Record")
+            ),
+            h("p", { className: "rec-hint" }, "Speak naturally: patient name is..., age..., temperature is..., diagnosis is..., treatment is...")
+          );
+        }
+
+        if (view === "recording") {
+          return h("div", null,
+            h("div", { className: "section" },
+              h("div", { style: { textAlign: "center" } },
+                h("button", { type: "button", className: "record-btn active", onClick: stopRecording }, "Stop"),
+                h("div", { style: { marginTop: 14, fontFamily: "monospace", fontSize: "1.4rem" } }, mmss(seconds))
+              ),
+              h("div", { className: "transcript-box", style: { marginTop: 18 } }, transcript || "Listening… start speaking the consultation details.")
+            )
+          );
+        }
+
+        return h("div", null,
+          h("div", { className: "section" },
+            h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
+              h("h2", { style: { margin: 0, fontSize: "1.05rem" } }, "Review & edit"),
+              h("span", { style: { fontSize: "0.8rem", color: "var(--muted)", fontFamily: "monospace" } }, mmss(seconds) + " recorded")
+            ),
+            h("div", { className: "transcript-box", style: { marginTop: 12 } }, transcript || "No speech captured — fill the chart in manually below.")
+          ),
+          h("div", { className: "section" },
+            FIELD_GROUPS.map(function (group) {
+              return h("div", { key: group.key, style: { marginBottom: 16 } },
+                h("div", { className: "section-title" }, group.title),
+                group.fields.map(function (field) {
+                  return h(Field, { key: field.key, def: field, value: fields[field.key], onChange: updateField });
+                })
+              );
+            }),
+            h("div", { className: "action-row" },
+              h("button", { type: "button", className: "btn btn-ghost", onClick: function () { setView("idle"); setTranscript(""); setFields(emptyFields()); setSeconds(0); } }, "Discard"),
+              h("button", { type: "button", className: "btn btn-primary", onClick: save }, "Save offline")
             )
           )
-        ),
-        h("button",{className:"btn btn-primary", type:"submit", disabled:busy}, busy ? "Creating…" : "Create account & sign in")
-      )
-    ),
-    h("div",{className:"link-row"}, "Already have an account? ", h("button",{onClick:props.onGoLogin}, "Sign in"))
-  );
-}
-
-/* ============================================================
-   HEADER
-============================================================ */
-function Header(props){
-  var initials = (props.session.fullName || "?").split(/\s+/).map(function(s){return s[0];}).slice(0,2).join("").toUpperCase();
-  return h("div",{className:"topbar"},
-    h("div",{className:"who"},
-      h("div",{className:"avatar"}, initials),
-      h("div",{className:"meta"},
-        h("strong", null, props.session.fullName),
-        h("span", null, props.session.facilityCode + " · " + props.session.role)
-      )
-    ),
-    h("div",{style:{display:"flex", alignItems:"center", gap:8}},
-      h("span",{className:"status-pill" + (props.online ? " online" : "")}, h("span",{className:"dot"}), props.online ? "Online" : "Offline"),
-      h("button",{className:"icon-btn", onClick:props.onLogout, title:"Log out"}, Icon("logout"))
-    )
-  );
-}
-
-/* ============================================================
-   HOME / RECORDER
-============================================================ */
-function HomeScreen(props){
-  var session = props.session, settings = props.settings, consultations = props.consultations;
-  var _rec = useState(false), recording = _rec[0], setRecording = _rec[1];
-  var _mode = useState("idle"), mode = _mode[0], setMode = _mode[1]; // idle | recording | review
-  var _finalT = useState(""), finalText = _finalT[0], setFinalText = _finalT[1];
-  var _interimT = useState(""), interimText = _interimT[0], setInterimText = _interimT[1];
-  var _fields = useState(emptyFieldState()), fields = _fields[0], setFields = _fields[1];
-  var _touched = useState({}), touched = _touched[0], setTouched = _touched[1];
-  var _seconds = useState(0), seconds = _seconds[0], setSeconds = _seconds[1];
-  var _support = useState(!!getRecognitionCtor()), supported = _support[0];
-  var recRef = useRef(null);
-  var timerRef = useRef(null);
-
-  useEffect(function(){
-    return function(){
-      if(recRef.current){ try{ recRef.current.stop(); }catch(e){} }
-      if(timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  function handleResult(finalChunk, interim){
-    setInterimText(interim);
-    if(finalChunk){
-      setFinalText(function(prev){
-        var combined = (prev ? prev + " " : "") + finalChunk.trim();
-        var found = extractFields(combined);
-        setFields(function(prevFields){
-          var merged = Object.assign({}, prevFields);
-          Object.keys(found).forEach(function(k){
-            if(!touched[k]) merged[k] = found[k];
-          });
-          return merged;
-        });
-        return combined;
-      });
-    }
-  }
-
-  function startRecording(){
-    if(!supported){
-      props.onToast("Voice recognition isn't supported in this browser. Try Chrome, or fill the form manually below.");
-      setMode("review");
-      return;
-    }
-    var rec = createRecognizer(settings.language, {
-      onResult: handleResult,
-      onError: function(err){
-        if(err === "not-allowed" || err === "service-not-allowed"){
-          props.onToast("Microphone access was blocked. Enable it in your browser settings.");
-        } else if(err === "no-speech"){
-          /* ignore transient no-speech errors, recognizer auto-restarts */
-        } else {
-          props.onToast("Voice recognition error: " + err);
-        }
-      },
-      onEnd: function(){
-        if(recRef.current && mode === "recording"){
-          try{ recRef.current.start(); }catch(e){}
-        }
-      }
-    });
-    if(!rec){ props.onToast("Could not start voice recognition."); return; }
-    recRef.current = rec;
-    setFinalText(""); setInterimText(""); setFields(emptyFieldState()); setTouched({});
-    setSeconds(0);
-    try{ rec.start(); }catch(e){}
-    setMode("recording");
-    timerRef.current = setInterval(function(){ setSeconds(function(s){ return s+1; }); }, 1000);
-  }
-
-  function stopRecording(){
-    if(recRef.current){ try{ recRef.current.onend = null; recRef.current.stop(); }catch(e){} recRef.current = null; }
-    if(timerRef.current){ clearInterval(timerRef.current); timerRef.current = null; }
-    setMode("review");
-  }
-
-  function updateField(key, value){
-    setTouched(function(t){ var nt = Object.assign({}, t); nt[key] = true; return nt; });
-    setFields(function(f){ var nf = Object.assign({}, f); nf[key] = value; return nf; });
-  }
-
-  function discard(){
-    setMode("idle"); setFinalText(""); setInterimText(""); setFields(emptyFieldState()); setTouched({});
-  }
-
-  function save(){
-    var record = {
-      id: uid(),
-      userId: session.userId,
-      chewUsername: session.username,
-      facilityCode: session.facilityCode,
-      consultDate: nowIso(),
-      transcript: finalText,
-      fields: fields,
-      syncStatus: "Pending",
-      createdAt: nowIso()
-    };
-    props.onSaveConsultation(record);
-    setMode("idle"); setFinalText(""); setInterimText(""); setFields(emptyFieldState()); setTouched({});
-  }
-
-  function mmss(s){
-    var m = Math.floor(s/60), ss = s%60;
-    return (m<10?"0":"")+m+":"+(ss<10?"0":"")+ss;
-  }
-
-  var todayCount = consultations.filter(function(c){
-    return c.userId===session.userId && (new Date(c.createdAt)).toDateString() === new Date().toDateString();
-  }).length;
-  var pendingCount = consultations.filter(function(c){ return c.userId===session.userId && c.syncStatus==="Pending"; }).length;
-
-  if(mode === "idle"){
-    return h("div", null,
-      h("div",{className:"home-hero"}, h("h2",null,"Start a consultation"), h("p",null,"Tap and dictate — the chart fills itself as you talk")),
-      h("div",{className:"rec-stage"},
-        h("div",{className:"rec-btn-wrap"},
-          h("span",{className:"ring r1"}), h("span",{className:"ring r2"}), h("span",{className:"ring r3"}),
-          h("button",{className:"rec-btn", onClick:startRecording}, Icon("mic"), h("span",{className:"lbl"},"Record"))
-        ),
-        h("p",{className:"rec-hint"}, supported
-          ? "Speak naturally: \u201Cpatient name is..., age..., temperature is..., diagnosis is..., treatment is...\u201D"
-          : "This browser can't run live voice recognition — you'll fill the chart by hand after tapping Record."
-        )
-      ),
-      h("div",{className:"quick-tiles"},
-        h("div",{className:"tile", onClick:props.onGoHistory}, h("div",{className:"n mono"}, todayCount), h("div",{className:"l"},"Consultations today")),
-        h("div",{className:"tile", onClick:props.onGoHistory}, h("div",{className:"n mono"}, pendingCount), h("div",{className:"l"},"Pending sync"))
-      )
-    );
-  }
-
-  if(mode === "recording"){
-    return h("div", null,
-      h("div",{style:{textAlign:"center"}},
-        h("div",{className:"rec-btn-wrap recording", style:{margin:"14px auto"}},
-          h("span",{className:"ring r1"}), h("span",{className:"ring r2"}), h("span",{className:"ring r3"}),
-          h("button",{className:"rec-btn active", onClick:stopRecording}, Icon("stop"), h("span",{className:"lbl"},"Stop"))
-        ),
-        h("div",{className:"rec-timer mono"}, mmss(seconds))
-      ),
-      h("div",{className:"transcript-box"},
-        finalText ? finalText : h("span",{className:"placeholder"}, "Listening… start speaking the consultation details."),
-        interimText ? h("span",{className:"interim"}, " " + interimText) : null
-      ),
-      h("div",{className:"form-section"},
-        h("div",{className:"sec-title"}, "Auto-filling live"),
-        h("div",{className:"grid2"},
-          h("div",{className:"field"}, h("label",null,"Name"), h("input",{readOnly:true, value:fields.fullName})),
-          h("div",{className:"field"}, h("label",null,"Age"), h("input",{readOnly:true, value:fields.age})),
-          h("div",{className:"field"}, h("label",null,"Temp (°C)"), h("input",{readOnly:true, value:fields.temperature})),
-          h("div",{className:"field"}, h("label",null,"Diagnosis"), h("input",{readOnly:true, value:fields.diagnosis}))
-        )
-      )
-    );
-  }
-
-  /* mode === review */
-  return h("div", null,
-    h("div",{style:{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6}},
-      h("h2",{style:{fontSize:"1.05rem", margin:0}}, "Review & edit"),
-      h("span",{className:"status-pill"}, mmss(seconds) + " recorded")
-    ),
-    h("div",{className:"cue-hint"}, h("strong",null,"Raw transcript"), finalText || "No speech captured — fill the chart in manually below."),
-    FIELD_GROUPS.map(function(group){
-      return h("div",{className:"form-section", key:group.key},
-        h("div",{className:"sec-title"}, group.title),
-        group.fields.map(function(def){
-          return h(Field, {key:def.key, def:def, value:fields[def.key], filled: !!fields[def.key] && !touched[def.key], onChange:updateField});
-        })
-      );
-    }),
-    h("div",{className:"action-row"},
-      h("button",{className:"btn btn-ghost", onClick:discard}, "Discard"),
-      h("button",{className:"btn btn-primary", onClick:save}, "Save offline")
-    )
-  );
-}
-
-/* ============================================================
-   HISTORY
-============================================================ */
-function HistoryScreen(props){
-  var mine = props.consultations.filter(function(c){ return c.userId === props.session.userId; })
-    .sort(function(a,b){ return new Date(b.createdAt) - new Date(a.createdAt); });
-  var _sel = useState(null), selected = _sel[0], setSelected = _sel[1];
-
-  if(mine.length === 0){
-    return h("div",{className:"empty-state"}, Icon("empty"), h("div",null,"No consultations saved yet"), h("div",{style:{fontSize:"0.78rem", marginTop:4}},"Recorded consultations will appear here."));
-  }
-
-  return h("div", null,
-    mine.map(function(rec){
-      return h("div",{className:"rec-card", key:rec.id, onClick:function(){ setSelected(rec); }},
-        h("div",{className:"top-row"},
-          h("div", null,
-            h("div",{className:"name"}, rec.fields.fullName || "Unnamed patient"),
-            h("div",{className:"date"}, fmtDate(rec.createdAt))
-          ),
-          h("span",{className:"sync-tag " + (rec.syncStatus==="Synced" ? "synced":"pending")}, rec.syncStatus)
-        ),
-        h("div",{className:"diag"}, rec.fields.diagnosis ? ("Dx: " + rec.fields.diagnosis) : (rec.fields.chiefComplaint ? ("Complaint: " + rec.fields.chiefComplaint) : "No diagnosis recorded"))
-      );
-    }),
-    selected ? h(RecordModal, {
-      record:selected,
-      onClose:function(){ setSelected(null); },
-      onDelete:function(){ props.onDelete(selected.id); setSelected(null); }
-    }) : null
-  );
-}
-
-function RecordModal(props){
-  var r = props.record;
-  return h("div",{className:"modal-overlay", onClick:function(e){ if(e.target.classList.contains("modal-overlay")) props.onClose(); }},
-    h("div",{className:"modal-sheet"},
-      h("button",{className:"modal-close", onClick:props.onClose}, "\u00D7"),
-      h("h3", null, r.fields.fullName || "Unnamed patient"),
-      h("div",{className:"date mono", style:{marginBottom:14}}, fmtDate(r.createdAt) + " · " + r.syncStatus),
-      FIELD_GROUPS.map(function(group){
-        var any = group.fields.some(function(f){ return r.fields[f.key]; });
-        if(!any) return null;
-        return h("div",{className:"form-section", key:group.key},
-          h("div",{className:"sec-title"}, group.title),
-          group.fields.map(function(f){
-            if(!r.fields[f.key]) return null;
-            return h("div",{key:f.key, style:{marginBottom:8, fontSize:"0.88rem"}},
-              h("strong", null, f.label + ": "), r.fields[f.key]
-            );
-          })
         );
-      }),
-      h("div",{className:"form-section"},
-        h("div",{className:"sec-title"}, "Raw transcript"),
-        h("div",{style:{fontSize:"0.82rem", color:"var(--muted)", lineHeight:1.5}}, r.transcript || "—")
-      ),
-      h("button",{className:"btn btn-danger", onClick:props.onDelete}, Icon("trash",{style:{width:16,height:16}}), " Delete record")
-    )
-  );
-}
+      }
 
-/* ============================================================
-   EXPORT
-============================================================ */
-function ExportScreen(props){
-  var mine = props.consultations.filter(function(c){ return c.userId === props.session.userId; });
+      function HistoryScreen(props) {
+        var mine = props.consultations.filter(function (c) { return c.userId === props.session.userId; }).sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+        var [selected, setSelected] = useState(null);
 
-  function doExport(kind){
-    if(mine.length === 0){ props.onToast("No consultations to export yet."); return; }
-    var stamp = new Date().toISOString().slice(0,10).replace(/-/g,"");
-    if(kind === "csv"){
-      props.onDownload(("chew_export_" + stamp + ".csv"), buildCsv(mine));
-    } else if(kind === "nhmis"){
-      props.onDownload(("nhmis_export_" + stamp + ".csv"), buildNhmisCsv(mine));
-    } else if(kind === "dhis2"){
-      props.onDownload(("dhis2_export_" + stamp + ".json"), buildDhis2Json(mine, props.session.facilityCode));
-    }
-  }
+        if (mine.length === 0) return h("div", { className: "empty" }, "No consultations saved yet.");
 
-  return h("div", null,
-    h("div",{className:"banner info"}, mine.length + " consultation" + (mine.length===1?"":"s") + " ready to export on this device."),
-    h("div",{className:"export-opt", onClick:function(){ doExport("csv"); }},
-      h("div",{className:"ic"}, Icon("file",{style:{width:20,height:20}})),
-      h("div", null, h("div",{className:"tt"},"Plain CSV"), h("div",{className:"dd"},"All fields, one row per consultation"))
-    ),
-    h("div",{className:"export-opt", onClick:function(){ doExport("nhmis"); }},
-      h("div",{className:"ic"}, Icon("pulse",{style:{width:20,height:20}})),
-      h("div", null, h("div",{className:"tt"},"NHMIS-compatible CSV"), h("div",{className:"dd"},"Standard column set for NHMIS/DHIS2 upload"))
-    ),
-    h("div",{className:"export-opt", onClick:function(){ doExport("dhis2"); }},
-      h("div",{className:"ic"}, Icon("cloud",{style:{width:20,height:20}})),
-      h("div", null, h("div",{className:"tt"},"DHIS2 event JSON"), h("div",{className:"dd"},"Tracker-style event payload for DHIS2 import"))
-    ),
-    h("p",{style:{fontSize:"0.76rem", color:"var(--muted)", marginTop:16, lineHeight:1.5}},
-      "Files save to your device through the save dialog. DHIS2 data element IDs shown here are placeholders — swap them for your instance's real metadata IDs before import."
-    )
-  );
-}
+        return h("div", { className: "list" },
+          mine.map(function (rec) {
+            return h("div", { key: rec.id, className: "consult-card", onClick: function () { setSelected(rec); } },
+              h("div", { className: "consult-top" },
+                h("div", null,
+                  h("div", { className: "consult-name" }, rec.fields.fullName || "Unnamed patient"),
+                  h("div", { className: "consult-date" }, fmtDate(rec.createdAt))
+                ),
+                h("span", { className: "sync-pill" + (rec.syncStatus === "Synced" ? " synced" : "") }, rec.syncStatus || "Pending")
+              ),
+              h("div", { style: { marginTop: 8, color: "var(--muted)", fontSize: "0.82rem" } }, rec.fields.diagnosis || rec.fields.chiefComplaint || "No diagnosis recorded")
+            );
+          }),
+          selected ? h("div", { className: "modal", key: "modal" },
+            h("div", { className: "modal-sheet" },
+              h("button", { type: "button", className: "modal-close", onClick: function () { setSelected(null); } }, "×"),
+              h("h3", { style: { margin: "0 0 10px" } }, selected.fields.fullName || "Unnamed patient"),
+              h("div", { className: "split-muted", style: { marginBottom: 14 } }, fmtDate(selected.createdAt) + " · " + (selected.syncStatus || "Pending")),
+              FIELD_GROUPS.map(function (group) {
+                var any = group.fields.some(function (field) { return selected.fields[field.key]; });
+                if (!any) return null;
+                return h("div", { key: group.key },
+                  h("div", { className: "section-title" }, group.title),
+                  group.fields.map(function (field) {
+                    if (!selected.fields[field.key]) return null;
+                    return h("div", { key: field.key, style: { marginBottom: 8, fontSize: "0.88rem" } },
+                      h("strong", null, field.label + ": "), selected.fields[field.key]
+                    );
+                  })
+                );
+              }),
+              h("div", { className: "section-title" }, "Raw transcript"),
+              h("div", { className: "transcript-box" }, selected.transcript || "—"),
+              h("div", { style: { marginTop: 16 } },
+                h("button", { type: "button", className: "btn btn-danger", onClick: function () { props.onDelete(selected.id); setSelected(null); } }, "Delete record")
+              )
+            )
+          ) : null
+        );
+      }
 
-/* ============================================================
-   SETTINGS
-============================================================ */
-function SettingsScreen(props){
-  var s = props.settings;
-  function set(patch){ props.onUpdateSettings(Object.assign({}, s, patch)); }
-  return h("div", null,
-    h("div",{className:"card", style:{marginBottom:16}},
-      h("div",{className:"settings-row"},
-        h("div", null, h("div",{className:"tt"},"Dictation language"), h("div",{className:"dd"},"Browser speech recognition quality varies by language")),
-        h("select",{value:s.language, onChange:function(e){ set({language:e.target.value}); }, style:{padding:"8px 10px", borderRadius:8, border:"1.5px solid var(--border)", background:"var(--bg-alt)"}},
-          h("option",{value:"en-US"},"English (US)"),
-          h("option",{value:"en-GB"},"English (UK)"),
-          h("option",{value:"ha-NG"},"Hausa"),
-          h("option",{value:"yo-NG"},"Yoruba"),
-          h("option",{value:"ig-NG"},"Igbo")
-        )
-      ),
-      h("div",{className:"settings-row"},
-        h("div", null, h("div",{className:"tt"},"Cloud backup"), h("div",{className:"dd"}, props.cloudAvailable ? "Sync saved consultations when online (optional)" : "Not available in this view")),
-        h("label",{className:"switch"},
-          h("input",{type:"checkbox", checked:s.cloudSync, disabled:!props.cloudAvailable, onChange:function(e){ set({cloudSync:e.target.checked}); }}),
-          h("span",{className:"track"})
-        )
-      )
-    ),
-    h("div",{className:"card"},
-      h("div",{className:"settings-row"},
-        h("div", null, h("div",{className:"tt"},"Signed in as")),
-        h("div",{className:"mono", style:{fontSize:"0.85rem"}}, props.session.username)
-      ),
-      h("div",{className:"settings-row"},
-        h("div", null, h("div",{className:"tt"},"Facility code")),
-        h("div",{className:"mono", style:{fontSize:"0.85rem"}}, props.session.facilityCode)
-      ),
-      h("div",{className:"settings-row"},
-        h("div", null, h("div",{className:"tt"},"Role")),
-        h("div",{className:"mono", style:{fontSize:"0.85rem"}}, props.session.role)
-      )
-    ),
-    h("p",{style:{fontSize:"0.75rem", color:"var(--muted)", marginTop:16, lineHeight:1.5}},
-      "All patient data stays in this browser's local storage unless cloud backup is on and you're connected. Clearing your browser data erases unsynced records — export regularly."
-    )
-  );
-}
+      function ExportScreen(props) {
+        var mine = props.consultations.filter(function (c) { return c.userId === props.session.userId; });
 
-/* ============================================================
-   ROOT APP
-============================================================ */
-function App(){
-  var _session = useState(Store.getSession()), session = _session[0], setSession = _session[1];
-  var _screen = useState("home"), screen = _screen[0], setScreen = _screen[1];
-  var _authView = useState("login"), authView = _authView[0], setAuthView = _authView[1];
-  var _consults = useState(Store.getConsults()), consultations = _consults[0], setConsultations = _consults[1];
-  var _settings = useState(Store.getSettings()), settings = _settings[0], setSettings = _settings[1];
-  var _online = useState(navigator.onLine), online = _online[0], setOnline = _online[1];
-  var _toast = useState(""), toast = _toast[0], setToast = _toast[1];
-  var toastTimer = useRef(null);
+        function download(filename, content, type) {
+          var blob = new Blob([content], { type: type || "text/plain;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
 
-  var capsRef = useRef({ downloads:null, db:null, user:null, ready:false });
+        function doCsv() {
+          if (!mine.length) { props.onToast("No consultations to export yet."); return; }
+          var lines = ["facility_code,chew_username,patient_name,diagnosis,created_at"];
+          mine.forEach(function (r) {
+            lines.push([r.facilityCode, r.chewUsername, (r.fields.fullName || ""), (r.fields.diagnosis || ""), r.createdAt].map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(","));
+          });
+          download("chew_export_" + new Date().toISOString().slice(0, 10) + ".csv", lines.join("\n"));
+        }
 
-  useEffect(function(){
-    function goOnline(){ setOnline(true); }
-    function goOffline(){ setOnline(false); }
-    window.addEventListener("online", goOnline);
-    window.addEventListener("offline", goOffline);
-    return function(){ window.removeEventListener("online", goOnline); window.removeEventListener("offline", goOffline); };
-  }, []);
+        function doJson() {
+          if (!mine.length) { props.onToast("No consultations to export yet."); return; }
+          download("chew_export_" + new Date().toISOString().slice(0, 10) + ".json", JSON.stringify(mine, null, 2), "application/json");
+        }
 
-  useEffect(function(){
-    if(window.claude && typeof window.claude.use === "function"){
-      Promise.all([window.claude.use("downloads"), window.claude.use("db"), window.claude.use("user")]).then(function(res){
-        capsRef.current = { downloads:res[0], db:res[1], user:res[2], ready:true };
-      }).catch(function(){ capsRef.current.ready = true; });
-    } else {
-      capsRef.current.ready = true;
-    }
-  }, []);
+        return h("div", null,
+          h("div", { className: "section" },
+            h("div", { className: "settings-row" },
+              h("div", null, h("div", { className: "tt" }, "CSV export"), h("div", { className: "dd" }, "Export all patient consultations")),
+              h("button", { type: "button", className: "btn btn-primary", style: { width: "auto", padding: "10px 14px" }, onClick: doCsv }, "Download")
+            ),
+            h("div", { className: "settings-row" },
+              h("div", null, h("div", { className: "tt" }, "JSON export"), h("div", { className: "dd" }, "Raw record payload")),
+              h("button", { type: "button", className: "btn btn-ghost", style: { width: "auto", padding: "10px 14px" }, onClick: doJson }, "Download")
+            )
+          )
+        );
+      }
 
-  function showToast(msg){
-    setToast(msg);
-    if(toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(function(){ setToast(""); }, 3200);
-  }
+      function SettingsScreen(props) {
+        var settings = props.settings;
 
-  function handleAuthed(newSession){
-    setSession(newSession);
-    setScreen("home");
-  }
-  function handleLogout(){
-    Auth.logout();
-    setSession(null);
-    setAuthView("login");
-  }
+        function setNext(patch) {
+          props.onUpdateSettings(Object.assign({}, settings, patch));
+        }
 
-  async function trySyncRecord(record){
-    var caps = capsRef.current;
-    if(!settings.cloudSync || !online || !caps.db || !caps.user) return record;
-    try{
-      var uidResolved = await caps.user.id();
-      if(!uidResolved) return record;
-      var ref = caps.db.collection("data/users/" + uidResolved + "/consultations").doc(record.id);
-      await ref.set(record);
-      return Object.assign({}, record, {syncStatus:"Synced"});
-    }catch(e){
-      return record;
-    }
-  }
+        return h("div", null,
+          h("div", { className: "card" },
+            h("div", { className: "settings-row" },
+              h("div", null, h("div", { className: "tt" }, "Dictation language"), h("div", { className: "dd" }, "Set the speech recognition language")),
+              h("select", { value: settings.language, onChange: function (e) { setNext({ language: e.target.value }); }, style: { padding: "8px 10px", borderRadius: 8, border: "1px solid var(--border)" } },
+                h("option", { value: "en-US" }, "English (US)"),
+                h("option", { value: "en-GB" }, "English (UK)"),
+                h("option", { value: "ha-NG" }, "Hausa"),
+                h("option", { value: "yo-NG" }, "Yoruba"),
+                h("option", { value: "ig-NG" }, "Igbo")
+              )
+            ),
+            h("div", { className: "settings-row" },
+              h("div", null, h("div", { className: "tt" }, "Cloud backup"), h("div", { className: "dd" }, "Sync records when online")),
+              h("label", { className: "switch" },
+                h("input", { type: "checkbox", checked: !!settings.cloudSync, onChange: function (e) { setNext({ cloudSync: e.target.checked }); } }),
+                h("span", { className: "track" })
+              )
+            )
+          ),
+          h("div", { className: "card", style: { marginTop: 16 } },
+            h("div", { className: "section-title" }, "Cloud configuration"),
+            h("div", { className: "cloud-config" },
+              h("div", { className: "field" },
+                h("label", null, "Cloud URL"),
+                h("input", { value: settings.cloudUrl || "", onChange: function (e) { setNext({ cloudUrl: e.target.value.trim() }); }, placeholder: "https://xyz.supabase.co" })
+              ),
+              h("div", { className: "field" },
+                h("label", null, "API key"),
+                h("input", { type: "password", value: settings.cloudKey || "", onChange: function (e) { setNext({ cloudKey: e.target.value.trim() }); }, placeholder: "Enter the API key" })
+              )
+            )
+          ),
+          h("div", { className: "card", style: { marginTop: 16 } },
+            h("div", { className: "settings-row" },
+              h("div", null, h("div", { className: "tt" }, "Signed in as")),
+              h("div", { className: "split-muted" }, props.session.username)
+            ),
+            h("div", { className: "settings-row" },
+              h("div", null, h("div", { className: "tt" }, "Facility code")),
+              h("div", { className: "split-muted" }, props.session.facilityCode)
+            ),
+            h("div", { className: "settings-row" },
+              h("div", null, h("div", { className: "tt" }, "Role")),
+              h("div", { className: "split-muted" }, props.session.role)
+            )
+          )
+        );
+      }
 
-  function saveConsultation(record){
-    setConsultations(function(prev){
-      var next = prev.concat([record]);
-      Store.saveConsults(next);
-      return next;
-    });
-    showToast("Saved offline on this device.");
-    trySyncRecord(record).then(function(updated){
-      if(updated.syncStatus === "Synced"){
-        setConsultations(function(prev){
-          var next = prev.map(function(c){ return c.id===record.id ? updated : c; });
+      function App() {
+        var [screen, setScreen] = useState("login");
+        var [session, setSession] = useState(Store.getSession());
+        var [consultations, setConsultations] = useState(Store.getConsults());
+        var [settings, setSettings] = useState(Store.getSettings());
+        var [toast, setToast] = useState("");
+
+        useEffect(function () {
+          if (session) {
+            setScreen("home");
+          }
+        }, [session]);
+
+        useEffect(function () {
+          Store.saveSettings(settings);
+        }, [settings]);
+
+        useEffect(function () {
+          var timeout;
+          if (toast) {
+            timeout = setTimeout(function () { setToast(""); }, 2200);
+          }
+          return function () { if (timeout) clearTimeout(timeout); };
+        }, [toast]);
+
+        function handleAuthed(nextSession) {
+          setSession(nextSession);
+          setScreen("home");
+        }
+
+        function handleSave(record) {
+          var next = Store.getConsults();
+          next.unshift(record);
           Store.saveConsults(next);
-          return next;
-        });
+          setConsultations(next);
+        }
+
+        function handleDelete(id) {
+          var next = Store.getConsults().filter(function (item) { return item.id !== id; });
+          Store.saveConsults(next);
+          setConsultations(next);
+        }
+
+        function updateSettings(nextSettings) {
+          setSettings(nextSettings);
+        }
+
+        if (!session && screen === "login") {
+          return h("div", { className: "app-shell" }, h(LoginScreen, { onAuthed: handleAuthed, onGoRegister: function () { setScreen("register"); } }));
+        }
+
+        if (!session && screen === "register") {
+          return h("div", { className: "app-shell" }, h(RegisterScreen, { onAuthed: handleAuthed, onGoLogin: function () { setScreen("login"); } }));
+        }
+
+        var nav = [
+          { key: "home", label: "Home" },
+          { key: "history", label: "History" },
+          { key: "export", label: "Export" },
+          { key: "settings", label: "Settings" }
+        ];
+
+        var screenContent;
+        if (screen === "history") {
+          screenContent = h(HistoryScreen, { session: session, consultations: consultations, onDelete: handleDelete });
+        } else if (screen === "export") {
+          screenContent = h(ExportScreen, { session: session, consultations: consultations, onToast: setToast });
+        } else if (screen === "settings") {
+          screenContent = h(SettingsScreen, { session: session, settings: settings, onUpdateSettings: updateSettings });
+        } else {
+          screenContent = h(HomeScreen, { session: session, settings: settings, consultations: consultations, onSaveConsultation: handleSave, onToast: setToast });
+        }
+
+        return h("div", { className: "app-shell" },
+          h(Header, { session: session, online: navigator.onLine, onLogout: function () { Auth.logout(); setSession(null); setScreen("login"); } }),
+          h("div", { className: "nav" },
+            nav.map(function (item) {
+              return h("button", { type: "button", key: item.key, className: item.key === screen ? "active" : "", onClick: function () { setScreen(item.key); } }, item.label);
+            })
+          ),
+          screenContent,
+          toast ? h("div", { style: { position: "fixed", left: 0, right: 0, bottom: 24, display: "flex", justifyContent: "center" } },
+            h("div", { style: { background: "#12241f", color: "#fff", borderRadius: 999, padding: "10px 18px", boxShadow: "0 8px 24px rgba(0,0,0,0.25)" } }, toast)
+          ) : null
+        );
       }
-    });
-  }
 
-  function deleteConsultation(id){
-    setConsultations(function(prev){
-      var next = prev.filter(function(c){ return c.id !== id; });
-      Store.saveConsults(next);
-      return next;
-    });
-    showToast("Record deleted.");
-  }
-
-  function updateSettings(next){
-    setSettings(next);
-    Store.saveSettings(next);
-  }
-
-  async function download(filename, data){
-    var caps = capsRef.current;
-    if(caps.downloads){
-      try{
-        await caps.downloads.save({filename:filename, data:data});
-        showToast("Saved " + filename);
-      }catch(e){
-        if(e && e.code === "declined"){ /* user cancelled, no toast needed */ }
-        else showToast("Couldn't save the file (" + (e && e.code || "unknown") + ").");
-      }
-      return;
-    }
-    // Fallback: trigger a normal browser download link
-    try{
-      var blob = new Blob([data], {type:"text/plain"});
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement("a");
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast("Downloaded " + filename);
-    }catch(e){
-      showToast("Export failed in this browser.");
-    }
-  }
-
-  if(!session){
-    return h(React.Fragment, null,
-      authView === "login"
-        ? h(LoginScreen, {onAuthed:handleAuthed, onGoRegister:function(){ setAuthView("register"); }})
-        : h(RegisterScreen, {onAuthed:handleAuthed, onGoLogin:function(){ setAuthView("login"); }}),
-      h(Toast, {message:toast})
-    );
-  }
-
-  var tabs = [
-    {key:"home", label:"Record"},
-    {key:"history", label:"History"},
-    {key:"export", label:"Export"},
-    {key:"settings", label:"Settings"}
-  ];
-
-  var body;
-  if(screen === "home") body = h(HomeScreen, {
-    session:session, settings:settings, consultations:consultations,
-    onSaveConsultation:saveConsultation, onToast:showToast, onGoHistory:function(){ setScreen("history"); }
-  });
-  else if(screen === "history") body = h(HistoryScreen, {session:session, consultations:consultations, onDelete:deleteConsultation});
-  else if(screen === "export") body = h(ExportScreen, {session:session, consultations:consultations, onDownload:download, onToast:showToast});
-  else body = h(SettingsScreen, {session:session, settings:settings, onUpdateSettings:updateSettings, cloudAvailable: !!(capsRef.current.db && capsRef.current.user)});
-
-  return h("div",{className:"app-shell"},
-    h(Header, {session:session, online:online, onLogout:handleLogout}),
-    h("div",{className:"tabbar"},
-      tabs.map(function(t){
-        return h("button",{key:t.key, className:screen===t.key ? "active":"", onClick:function(){ setScreen(t.key); }}, t.label);
-      })
-    ),
-    body,
-    h(Toast, {message:toast})
-  );
-}
-
-var root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(h(App));
-
-// Register the service worker so the app shell (this page, icons, manifest)
-// keeps loading with no connection. Only works when served over http(s) —
-// browsers refuse to register a service worker for a page opened as a
-// bare file:// path, so this silently no-ops in that case.
-if("serviceWorker" in navigator && (location.protocol === "http:" || location.protocol === "https:")){
-  window.addEventListener("load", function(){
-    navigator.serviceWorker.register("./service-worker.js").catch(function(err){
-      console.warn("Service worker registration failed:", err);
-    });
-  });
-}
-
-})();
-</script>
+      var root = document.getElementById("root");
+      ReactDOM.createRoot(root).render(h(App));
+    })();
+  </script>
 </body>
 </html>
